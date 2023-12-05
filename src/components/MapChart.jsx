@@ -5,32 +5,14 @@ import { Tooltip } from "react-tooltip";
 import * as d3 from 'd3';
 import geojson from '../assets/custom.geo.json'
 import waterAndSanitation from '../assets/water-and-sanitation.csv?url'
+import { constants } from "../constants/constants";
+import { scaleLinear } from "d3-scale"
 
 export default function MapChart() {
     const [waterAndSanitationData, setWaterAndSanitationData] = useState([]);
     const [content, setContent] = useState("");
-    const [yearsSelect, setYearsSelect] = useState("2000")
-    const [infoTypesSelect, setInfoTypesSelect] = useState({
-        en: 'Access to basic drinking water',
-        tr: 'Temel içme suyuna erişim'
-    });
-
-    let years = ['2000', '2001', '2002', '2003', '2004', '2005', '2006', '2007', '2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020']
-
-    let infoTypes = [
-        {
-            en: 'Access to basic drinking water',
-            tr: 'Temel içme suyuna erişim'
-        },
-        {
-            en: 'Access to basic handwashing facilities',
-            tr: 'Temel el yıkama tesislerine erişim'
-        },
-        {
-            en: 'Access to basic sanitation services',
-            tr: 'Temel temizlik hizmetlerine (sanitasyon) erişim'
-        }
-    ]
+    const [yearsSelect, setYearsSelect] = useState(constants.years[0])
+    const [infoTypesSelect, setInfoTypesSelect] = useState(constants.infoTypes[0]);
 
     useEffect(() => {
         d3.csv(waterAndSanitation).then((data) => {
@@ -64,48 +46,17 @@ export default function MapChart() {
 
     return (
         <div>
-            <div className="flex flex-row justify-center gap-10">
-                <div className="">
-                    <label className="text-[#002146]">Yıl Seçin</label>
-                    <select
-                        className="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                        name="yearsSelect"
-                        value={yearsSelect}
-                        onChange={e => setYearsSelect(e.target.value)}
-                    >
-                        {years.map((item, index) =>
-                            <option key={index} value={item}>{item}</option>
-                        )}
-                    </select>
-                </div>
-                <div className="">
-                    <label className="text-[#002146]">Veriyi Seçin</label>
-                    <select
-                        className="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                        name="infoTypesSelect"
-                        value={infoTypesSelect.en}
-                        onChange={e => {
-                            const value = infoTypes.filter((item) => item.en === e.target.value)[0]
-                            setInfoTypesSelect(value)
-                        }}
-                    >
-                        {infoTypes.map((item, index) =>
-                            <option key={index} value={item.en}>{item.tr}</option>
-                        )}
-                    </select>
-                </div>
-            </div>
-
             <div data-tooltip-id="my-tooltip">
-                <ComposableMap width={900} height={window.innerHeight - 300} projectionConfig={{
+                <ComposableMap width={800} height={window.innerHeight - 440} projectionConfig={{
                     rotate: [-10, 0, 0],
-                    scale: 147
+                    scale: 100
                 }}>
                     <Sphere stroke="#bbb" strokeWidth={0.5} />
                     <Graticule stroke="#bbb" strokeWidth={0.5} />
                     <Geographies geography={geojson}>
                         {({ geographies }) =>
                             geographies.map((geo) => {
+                                const colorScale = scaleLinear().domain([0, 100]).range(['#bbb', "#012A4A"])
                                 const item = waterAndSanitationData.filter((item) => item.Entity === geo.properties.name)[0];
                                 const [dataBasedYear = null] = item?.data.filter((item) => item.Year === yearsSelect) || [];
                                 let infoTypeEn = infoTypesSelect?.en;
@@ -114,6 +65,7 @@ export default function MapChart() {
                                 return <Geography
                                     key={geo.rsmKey}
                                     geography={geo}
+                                    fill={colorScale(dataBasedInfoType)}
                                     className="my-anchor-element"
                                     onMouseEnter={() => {
                                         setContent(
@@ -126,31 +78,60 @@ export default function MapChart() {
                                     }}
                                     style={{
                                         default: {
-                                            fill: dataBasedInfoType ? "#94A3B8" : "#eee",
+                                            fill: dataBasedInfoType && dataBasedInfoType,
                                             outline: "none"
                                         },
                                         hover: {
-                                            fill: "#002146",
-                                            outline: "none"
+                                            fill: "-moz-initial",
+                                            outline: "none",
+                                            stroke: "#000000",
+                                            strokeWidth: "2px"
                                         },
                                         pressed: {
-                                            fill: "#E42",
+                                            fill: "#002146",
                                             outline: "none"
                                         }
-                                    }} />
+                                    }}
+                                />
                             })
                         }
                     </Geographies>
                 </ComposableMap>
             </div>
-            <Tooltip id="my-tooltip" anchorSelect=".my-anchor-element" place="top" float delayHide={200}>
-                <div className=" text-base">
+            <Tooltip id="my-tooltip" style={{ background: "#ddd", color: "#000" }} anchorSelect=".my-anchor-element" place="right-start" float delayHide={200}>
+                <div className="text-base border-b-2 border-black" >
                     {content.name}
                 </div>
                 <div>
                     {`${content.infoType}: ${content?.data}`}
                 </div>
             </Tooltip>
+            <div className="pt-4 flex flex-row justify-center gap-10">
+                <div>
+                    {constants.infoTypes.map((item, index) => (
+                        <div key={index} className="flex items-center mb-4">
+                            <input id={item.en} type="radio" value={item.en} name={item.en} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 hover:cursor-pointer" checked={infoTypesSelect.en === item.en} onChange={(e) => {
+                                const value = constants.infoTypes.filter((item) => item.en === e.target.value)[0]
+                                setInfoTypesSelect(value)
+                            }} />
+                            <label htmlFor={item.en} className="ms-2 text-sm font-medium text-gray-900 hover:cursor-pointer">{item.tr}</label>
+                        </div>
+                    ))}
+                </div>
+                <div className="">
+                    <label className="text-[#002146]">Yıl Seçin</label>
+                    <select
+                        className="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                        name="yearsSelect"
+                        value={yearsSelect}
+                        onChange={e => setYearsSelect(e.target.value)}
+                    >
+                        {constants.years.map((item, index) =>
+                            <option key={index} value={item}>{item}</option>
+                        )}
+                    </select>
+                </div>
+            </div>
         </div>
     )
 }
