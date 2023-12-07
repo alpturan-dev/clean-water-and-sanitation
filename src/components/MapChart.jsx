@@ -118,10 +118,10 @@ export default function MapChart() {
                         </div>
                     ))}
                 </div>
-                <div className="">
-                    <label className="text-[#002146]">Yıl Seçin</label>
+                <div className="flex flex-row gap-2">
+                    <label className="text-[#002146]">Yıl seçin:</label>
                     <select
-                        className="py-3 px-4 pe-9 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
+                        className="h-1/2 py-3 px-4 pe-9 block border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
                         name="yearsSelect"
                         value={yearsSelect}
                         onChange={e => setYearsSelect(e.target.value)}

@@ -1,11 +1,16 @@
+import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar"
-import MapChart from "./components/MapChart"
+import Home from './pages/Home.jsx'
+import MapPage from './pages/MapPage.jsx'
 
 function App() {
   return (
     <>
       <Navbar />
-      <MapChart />
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="harita" element={<MapPage />} />
+      </Routes>
     </>
   )
 }
