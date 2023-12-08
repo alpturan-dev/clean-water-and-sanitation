@@ -7,14 +7,18 @@ import geojson from '../assets/custom.geo.json'
 import waterAndSanitation from '../assets/water-and-sanitation.csv?url'
 import { constants } from "../constants/constants";
 import { scaleLinear } from "d3-scale"
+import SelectBox from "./SelectBox";
+import { AiOutlineLoading } from "react-icons/ai";
 
 export default function MapChart() {
+    const [loading, setLoading] = useState(false)
     const [waterAndSanitationData, setWaterAndSanitationData] = useState([]);
     const [content, setContent] = useState("");
     const [yearsSelect, setYearsSelect] = useState(constants.years[0])
     const [infoTypesSelect, setInfoTypesSelect] = useState(constants.infoTypes[0]);
 
     useEffect(() => {
+        setLoading(true)
         d3.csv(waterAndSanitation).then((data) => {
             const groupedData = data.reduce((acc, obj) => {
                 const foundEntity = acc.find(item => item.Entity === obj.Entity);
@@ -37,6 +41,7 @@ export default function MapChart() {
             }, []);
             console.log("groupedData", groupedData);
             setWaterAndSanitationData(groupedData);
+            setLoading(false)
         });
     }, [])
 
@@ -44,7 +49,7 @@ export default function MapChart() {
     //     console.log("year", yearSelect)
     // }, [yearSelect])
 
-    return (
+    return loading ? (<AiOutlineLoading className="h-4 w-4 animate-spin" />) : (
         <div>
             <div data-tooltip-id="my-tooltip">
                 <ComposableMap width={800} height={window.innerHeight - 440} projectionConfig={{
@@ -118,7 +123,7 @@ export default function MapChart() {
                         </div>
                     ))}
                 </div>
-                <div className="flex flex-row gap-2">
+                {/* <div className="flex flex-row gap-2">
                     <label className="text-[#002146]">Yıl seçin:</label>
                     <select
                         className="h-1/2 py-3 px-4 pe-9 block border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
@@ -130,7 +135,12 @@ export default function MapChart() {
                             <option key={index} value={item}>{item}</option>
                         )}
                     </select>
-                </div>
+                </div> */}
+                <SelectBox
+                    value={yearsSelect}
+                    setValue={setYearsSelect}
+                    options={constants.years}
+                />
             </div>
         </div>
     )

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom"
 function Navbar() {
     return (
         <div>
-            <div className="mx-auto px-8 py-6 w-full flex flex-row justify-around gap-10 bg-[#002146]">
+            <div className="mx-auto px-8 py-6 w-full hidden md:flex flex-row justify-around gap-10 bg-[#002146] text-[#fff]">
                 <h1 className="font-extrabold text-2xl">
                     <Link to="/">Temiz Su ve Sanitasyon</Link>
                 </h1>
@@ -19,6 +19,7 @@ function Navbar() {
                     </li>
                 </ul>
             </div>
+            <div className="block md:hidden">Navbar</div>
             <hr className="border-0 w-full h-2 bg-slate-400" />
         </div>
     )
