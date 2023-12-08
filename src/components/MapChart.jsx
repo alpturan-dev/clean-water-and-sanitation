@@ -49,81 +49,86 @@ export default function MapChart() {
     //     console.log("year", yearSelect)
     // }, [yearSelect])
 
-    return loading ? (<AiOutlineLoading className="h-4 w-4 animate-spin" />) : (
+    return (
         <div>
-            <div data-tooltip-id="my-tooltip">
-                <ComposableMap width={800} height={window.innerHeight - 440} projectionConfig={{
-                    rotate: [-10, 0, 0],
-                    scale: 100
-                }}>
-                    <Sphere stroke="#bbb" strokeWidth={0.5} />
-                    <Graticule stroke="#bbb" strokeWidth={0.5} />
-                    <Geographies geography={geojson}>
-                        {({ geographies }) =>
-                            geographies.map((geo) => {
-                                const colorScale = scaleLinear().domain([0, 100]).range(['#bbb', "#012A4A"])
-                                const item = waterAndSanitationData.filter((item) => item.Entity === geo.properties.name)[0];
-                                const [dataBasedYear = null] = item?.data.filter((item) => item.Year === yearsSelect) || [];
-                                let infoTypeEn = infoTypesSelect?.en;
-                                let infoTypeTr = infoTypesSelect?.tr;
-                                const dataBasedInfoType = dataBasedYear && dataBasedYear[`${infoTypeEn}`];
-                                return <Geography
-                                    key={geo.rsmKey}
-                                    geography={geo}
-                                    fill={colorScale(dataBasedInfoType)}
-                                    className="my-anchor-element"
-                                    onMouseEnter={() => {
-                                        setContent(
-                                            {
-                                                name: geo.properties.name_tr,
-                                                infoType: infoTypeTr && infoTypeTr,
-                                                data: dataBasedInfoType ? dataBasedInfoType + '%' : "Veri yok."
-                                            }
-                                        );
-                                    }}
-                                    style={{
-                                        default: {
-                                            fill: dataBasedInfoType && dataBasedInfoType,
-                                            outline: "none"
-                                        },
-                                        hover: {
-                                            fill: "-moz-initial",
-                                            outline: "none",
-                                            stroke: "#000000",
-                                            strokeWidth: "2px"
-                                        },
-                                        pressed: {
-                                            fill: "#002146",
-                                            outline: "none"
-                                        }
-                                    }}
-                                />
-                            })
-                        }
-                    </Geographies>
-                </ComposableMap>
-            </div>
-            <Tooltip id="my-tooltip" style={{ background: "#ddd", color: "#000" }} anchorSelect=".my-anchor-element" place="right-start" float delayHide={200}>
-                <div className="text-base border-b-2 border-black" >
-                    {content.name}
-                </div>
+            {loading ? (
+                <div className="h-full w-full flex items-center justify-center">
+                    <AiOutlineLoading className="h-20 w-20 animate-spin" />
+                </div>) : (
                 <div>
-                    {`${content.infoType}: ${content?.data}`}
-                </div>
-            </Tooltip>
-            <div className="pt-4 flex flex-row justify-center gap-10">
-                <div>
-                    {constants.infoTypes.map((item, index) => (
-                        <div key={index} className="flex items-center mb-4">
-                            <input id={item.en} type="radio" value={item.en} name={item.en} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 hover:cursor-pointer" checked={infoTypesSelect.en === item.en} onChange={(e) => {
-                                const value = constants.infoTypes.filter((item) => item.en === e.target.value)[0]
-                                setInfoTypesSelect(value)
-                            }} />
-                            <label htmlFor={item.en} className="ms-2 text-sm font-medium text-gray-900 hover:cursor-pointer">{item.tr}</label>
+                    <div data-tooltip-id="my-tooltip">
+                        <ComposableMap width={800} height={window.innerHeight - 440} projectionConfig={{
+                            rotate: [-10, 0, 0],
+                            scale: 100
+                        }}>
+                            <Sphere stroke="#bbb" strokeWidth={0.5} />
+                            <Graticule stroke="#bbb" strokeWidth={0.5} />
+                            <Geographies geography={geojson}>
+                                {({ geographies }) =>
+                                    geographies.map((geo) => {
+                                        const colorScale = scaleLinear().domain([0, 100]).range(['#bbb', "#012A4A"])
+                                        const item = waterAndSanitationData.filter((item) => item.Entity === geo.properties.name)[0];
+                                        const [dataBasedYear = null] = item?.data.filter((item) => item.Year === yearsSelect) || [];
+                                        let infoTypeEn = infoTypesSelect?.en;
+                                        let infoTypeTr = infoTypesSelect?.tr;
+                                        const dataBasedInfoType = dataBasedYear && dataBasedYear[`${infoTypeEn}`];
+                                        return <Geography
+                                            key={geo.rsmKey}
+                                            geography={geo}
+                                            fill={colorScale(dataBasedInfoType)}
+                                            className="my-anchor-element"
+                                            onMouseEnter={() => {
+                                                setContent(
+                                                    {
+                                                        name: geo.properties.name_tr,
+                                                        infoType: infoTypeTr && infoTypeTr,
+                                                        data: dataBasedInfoType ? dataBasedInfoType + '%' : "Veri yok."
+                                                    }
+                                                );
+                                            }}
+                                            style={{
+                                                default: {
+                                                    fill: dataBasedInfoType && dataBasedInfoType,
+                                                    outline: "none"
+                                                },
+                                                hover: {
+                                                    fill: "-moz-initial",
+                                                    outline: "none",
+                                                    stroke: "#000000",
+                                                    strokeWidth: "2px"
+                                                },
+                                                pressed: {
+                                                    fill: "#002146",
+                                                    outline: "none"
+                                                }
+                                            }}
+                                        />
+                                    })
+                                }
+                            </Geographies>
+                        </ComposableMap>
+                    </div>
+                    <Tooltip id="my-tooltip" style={{ background: "#ddd", color: "#000" }} anchorSelect=".my-anchor-element" place="right-start" float delayHide={200}>
+                        <div className="text-base border-b-2 border-black" >
+                            {content.name}
                         </div>
-                    ))}
-                </div>
-                {/* <div className="flex flex-row gap-2">
+                        <div>
+                            {`${content.infoType}: ${content?.data}`}
+                        </div>
+                    </Tooltip>
+                    <div className="pt-4 flex flex-row justify-center gap-10">
+                        <div>
+                            {constants.infoTypes.map((item, index) => (
+                                <div key={index} className="flex items-center mb-4">
+                                    <input id={item.en} type="radio" value={item.en} name={item.en} className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 hover:cursor-pointer" checked={infoTypesSelect.en === item.en} onChange={(e) => {
+                                        const value = constants.infoTypes.filter((item) => item.en === e.target.value)[0]
+                                        setInfoTypesSelect(value)
+                                    }} />
+                                    <label htmlFor={item.en} className="ms-2 text-sm font-medium text-gray-900 hover:cursor-pointer">{item.tr}</label>
+                                </div>
+                            ))}
+                        </div>
+                        {/* <div className="flex flex-row gap-2">
                     <label className="text-[#002146]">Yıl seçin:</label>
                     <select
                         className="h-1/2 py-3 px-4 pe-9 block border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
@@ -136,12 +141,14 @@ export default function MapChart() {
                         )}
                     </select>
                 </div> */}
-                <SelectBox
-                    value={yearsSelect}
-                    setValue={setYearsSelect}
-                    options={constants.years}
-                />
-            </div>
+                        <SelectBox
+                            value={yearsSelect}
+                            setValue={setYearsSelect}
+                            options={constants.years}
+                        />
+                    </div>
+                </div>
+            )}
         </div>
     )
 }
