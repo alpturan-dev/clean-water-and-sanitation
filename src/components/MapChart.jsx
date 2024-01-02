@@ -45,12 +45,8 @@ export default function MapChart() {
         });
     }, [])
 
-    // useEffect(() => {
-    //     console.log("year", yearSelect)
-    // }, [yearSelect])
-
     return (
-        <div>
+        <div className="bg-[#fff]">
             {loading ? (
                 <div className="h-full w-full flex items-center justify-center">
                     <AiOutlineLoading className="h-20 w-20 animate-spin" />
@@ -128,19 +124,6 @@ export default function MapChart() {
                                 </div>
                             ))}
                         </div>
-                        {/* <div className="flex flex-row gap-2">
-                    <label className="text-[#002146]">Yıl seçin:</label>
-                    <select
-                        className="h-1/2 py-3 px-4 pe-9 block border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none"
-                        name="yearsSelect"
-                        value={yearsSelect}
-                        onChange={e => setYearsSelect(e.target.value)}
-                    >
-                        {constants.years.map((item, index) =>
-                            <option key={index} value={item}>{item}</option>
-                        )}
-                    </select>
-                </div> */}
                         <SelectBox
                             value={yearsSelect}
                             setValue={setYearsSelect}

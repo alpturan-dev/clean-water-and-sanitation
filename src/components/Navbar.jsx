@@ -9,18 +9,18 @@ function Navbar() {
                 </h1>
                 <ul className="flex flex-row justify-center items-center gap-10">
                     <li className="hover:opacity-90">
+                        <Link to="/">Anasayfa</Link>
+                    </li>
+                    <li className="hover:opacity-90">
                         <Link to="/harita">Harita</Link>
                     </li>
                     <li className="hover:opacity-90">
-                        <a href="/">Bilgilendirme</a>
-                    </li>
-                    <li className="hover:opacity-90">
-                        <a href="/">Kaynaklar</a>
+                        <Link to="/">Bilgilendirme</Link>
                     </li>
                 </ul>
             </div>
             <div className="block md:hidden">Navbar</div>
-            <hr className="border-0 w-full h-2 bg-slate-400" />
+            <hr className="border-0 w-full h-1 bg-slate-400" />
         </div>
     )
 }
